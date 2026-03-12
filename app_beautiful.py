@@ -242,8 +242,80 @@ header[data-testid="stHeader"] { display: none; }
     background: var(--accent) !important;
     color: #0a0a0f !important;
 }
-</style>
-""", unsafe_allow_html=True)
+
+/* ── MOBILE RESPONSIVE ── */
+@media (max-width: 768px) {
+
+    /* Hero title smaller on mobile */
+    .hero-title {
+        font-size: 2rem !important;
+    }
+    .hero-sub {
+        font-size: 0.65rem !important;
+    }
+
+    /* Cards padding tighter */
+    .card {
+        padding: 1rem 1rem !important;
+    }
+
+    /* Verdict badges scale down */
+    .verdict-real, .verdict-fake {
+        font-size: 1.1rem !important;
+        padding: 0.4rem 1rem !important;
+    }
+
+    /* Metrics stack better */
+    [data-testid="stMetricValue"] {
+        font-size: 1.3rem !important;
+    }
+
+    /* Bigger tap targets for buttons */
+    .stButton > button {
+        width: 100% !important;
+        font-size: 1.05rem !important;
+        padding: 0.75rem 1rem !important;
+    }
+
+    /* Tabs wrap properly */
+    .stTabs [data-baseweb="tab-list"] {
+        flex-wrap: wrap !important;
+        gap: 4px !important;
+    }
+    .stTabs [data-baseweb="tab"] {
+        font-size: 0.7rem !important;
+        padding: 0.3rem 0.6rem !important;
+    }
+
+    /* Textarea bigger on mobile for easier typing */
+    .stTextArea textarea {
+        font-size: 1.05rem !important;
+        min-height: 140px !important;
+    }
+
+    /* Sidebar nav labels bigger for tap */
+    [data-testid="stSidebar"] [data-testid="stRadio"] label {
+        font-size: 1.05rem !important;
+        padding: 0.3rem 0 !important;
+    }
+
+    /* General text bump */
+    html, body, [class*="css"] {
+        font-size: 16px !important;
+    }
+
+    /* Block-level main padding */
+    .block-container {
+        padding: 1rem 0.8rem !important;
+    }
+
+    /* Tag pills wrap */
+    .tag {
+        font-size: 0.75rem !important;
+        padding: 0.25rem 0.5rem !important;
+    }
+}
+</style>""", unsafe_allow_html=True)
 
 
 # ─────────────────────────────────────────────
