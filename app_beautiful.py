@@ -431,11 +431,11 @@ if "🔍  Predict" in page:
 
     st.markdown("""
     <div class='page-header'>
-        <div class='page-title'>Fake News Verification</div>
+        <div class='page-title'>Article Verification</div>
         <div class='page-subtitle'>Paste a news article or headline to assess its credibility</div>
     </div>""", unsafe_allow_html=True)
 
-    tab1, tab2 = st.tabs(["Article", "Bulk Analysis"])
+    tab1, tab2 = st.tabs(["Single Article", "Bulk Analysis"])
 
     with tab1:
         st.markdown('<div class="section-label">Article Text</div>', unsafe_allow_html=True)
@@ -447,7 +447,7 @@ if "🔍  Predict" in page:
         with col_btn:
             analyze = st.button("Analyse Article")
         with col_hint:
-            st.markdown('<span style="font-size:1.00rem;color:#9ca3af;">For accurate results, it is recommended to use at least 30 words.</span>', unsafe_allow_html=True)
+            st.markdown('<span style="font-size:0.78rem;color:#9ca3af;">Minimum 30 words recommended for accurate results</span>', unsafe_allow_html=True)
 
         if analyze:
             if not model_loaded:
@@ -723,36 +723,39 @@ elif "📊  Evaluate" in page:
 elif "📖  How It Works" in page:
 
     st.markdown("""
-    <div class='page-header'>
-        <div class='page-title'>Methodology</div>
-        <div class='page-subtitle'>Technical overview of the data pipeline and classification model</div>
-    </div>""", unsafe_allow_html=True)
+    <div style='margin-bottom:2rem;'>
+        <div class='hero-title'>How It <span>Works</span></div>
+        <div class='hero-sub'>Architecture · Pipeline · Design Decisions</div>
+    </div>
+    """, unsafe_allow_html=True)
 
     steps = [
-        ("01", "Data Balancing", "Global news (~72,000 rows) is downsampled to 10,000 samples. Nigerian news data is replicated 5× to counteract class imbalance and improve regional representation."),
-        ("02", "Text Preprocessing", "A multi-stage cleaning pipeline is applied: lowercasing, URL and HTML removal, non-alphabetic character stripping, NLTK tokenization, stopword removal, and WordNet lemmatization."),
-        ("03", "TF-IDF Vectorization", "The top 5,000 features are selected using Term Frequency–Inverse Document Frequency. A max_df threshold of 0.7 excludes terms appearing in over 70% of documents."),
-        ("04", "Passive Aggressive Classifier", "An online learning algorithm that updates its decision boundary only on misclassifications. Well-suited to large-scale text classification with high efficiency."),
-        ("05", "Confidence Scoring", "The raw decision function distance from the classification hyperplane is normalised to a 0–100% confidence scale, capped at a distance of 3.0."),
-        ("06", "Feature Interpretation", "Each vocabulary term carries a learned coefficient. Positive values indicate association with misinformation; negative values indicate credibility signals."),
+        ("01", "Data Balancing", "Global news (~72k rows) is downsampled to 10k. Nigerian news is 5× oversampled to reduce class imbalance and regional bias."),
+        ("02", "Text Preprocessing", "Lowercasing → URL/HTML stripping → non-alpha removal → NLTK tokenization → stopword removal → WordNet lemmatization."),
+        ("03", "TF-IDF Vectorization", "Top 5,000 features selected. max_df=0.7 drops overly common terms. Sparse matrix fed to classifier."),
+        ("04", "Passive Aggressive Classifier", "Online learning algorithm — updates only when it makes mistakes. Efficient for large text corpora. max_iter=50."),
+        ("05", "Confidence Scoring", "Raw score from the hyperplane distance is used as confidence proxy: capped at 3.0 → scaled 0–100%."),
+        ("06", "Word Signals", "Each word has a learned coefficient. Positive → Fake signal. Negative → Real signal. Visualized in the Evaluate tab."),
     ]
 
     for num, title, desc in steps:
         st.markdown(f"""
-        <div class="step-card">
-            <div class="step-num">{num}</div>
+        <div class="card" style="display:flex;gap:1.4rem;align-items:flex-start;">
+            <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:#e8ff45;opacity:0.25;line-height:1;min-width:2.5rem;">{num}</div>
             <div>
-                <div class="step-title">{title}</div>
-                <div class="step-desc">{desc}</div>
+                <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;color:#f0f0f5;margin-bottom:0.3rem;">{title}</div>
+                <div style="font-size:0.88rem;color:#9090a8;line-height:1.6;">{desc}</div>
             </div>
-        </div>""", unsafe_allow_html=True)
+        </div>
+        """, unsafe_allow_html=True)
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
     st.markdown("""
     <div class="card">
-        <div class="section-label">Required Files</div>
-        <div style='font-family:"JetBrains Mono",monospace;font-size:0.8rem;color:#6b7280;line-height:2.2;margin-top:0.5rem;'>
-            fake_news_model.joblib &nbsp;&nbsp;·&nbsp;&nbsp; tfidf_vectorizer.joblib<br>
-            combined_news_data.csv &nbsp;&nbsp;·&nbsp;&nbsp; balanced_dataset.csv &nbsp;&nbsp;·&nbsp;&nbsp; final_preprocessed_data.csv
+        <div class="card-label">Required Files</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:0.82rem;color:#9090a8;line-height:2;">
+            fake_news_model.joblib &nbsp;·&nbsp; tfidf_vectorizer.joblib<br>
+            combined_news_data.csv &nbsp;·&nbsp; balanced_dataset.csv &nbsp;·&nbsp; final_preprocessed_data.csv
         </div>
-    </div>""", unsafe_allow_html=True)
+    </div>
+    """, unsafe_allow_html=True)
