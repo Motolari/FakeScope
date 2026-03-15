@@ -33,30 +33,25 @@ st.set_page_config(
 # ─────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
 
 :root {
-    --bg:         #f8f9fb;
-    --surface:    #ffffff;
-    --surface2:   #f0f2f5;
-    --border:     #e2e5ea;
-    --border2:    #cdd1d8;
-    --accent:     #1a56db;
-    --accent-lt:  #eff4ff;
-    --text:       #111827;
-    --text2:      #374151;
-    --muted:      #6b7280;
-    --real:       #047857;
-    --real-lt:    #ecfdf5;
-    --fake:       #b91c1c;
-    --fake-lt:    #fef2f2;
+    --bg:        #0a0a0f;
+    --surface:   #12121a;
+    --border:    #1e1e2e;
+    --accent:    #e8ff45;
+    --accent2:   #ff5f40;
+    --accent3:   #40d9ff;
+    --text:      #f0f0f5;
+    --muted:     #6b6b80;
+    --real:      #3ddc97;
+    --fake:      #ff5f40;
 }
 
 html, body, [class*="css"] {
-    font-family: 'Inter', sans-serif !important;
+    font-family: 'IBM Plex Sans', sans-serif;
     background-color: var(--bg) !important;
     color: var(--text) !important;
-    font-size: 14px;
 }
 
 header[data-testid="stHeader"], footer { display: none !important; }
@@ -74,41 +69,63 @@ header[data-testid="stHeader"], footer { display: none !important; }
 [data-testid="stSidebar"] * { color: var(--text) !important; }
 
 [data-testid="stSidebar"] [data-testid="stRadio"] label {
-    font-family: 'Inter', sans-serif !important;
-    font-size: 0.875rem !important;
+    font-family: 'IBM Plex Sans', sans-serif !important;
+    font-size: 0.9rem !important;
     font-weight: 400 !important;
-    color: var(--text2) !important;
+    color: var(--muted) !important;
     padding: 0.3rem 0 !important;
 }
 [data-testid="stSidebar"] [data-testid="stRadio"] label:hover {
-    color: var(--accent) !important;
+    color: var(--text) !important;
 }
 
-/* Page header */
+/* Hero title */
+.hero-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 3.2rem;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    color: var(--text);
+}
+.hero-title span { color: var(--accent); }
+.hero-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-top: 0.4rem;
+}
+
+/* Page header (for inner pages) */
 .page-header {
     border-bottom: 1px solid var(--border);
     padding-bottom: 1.25rem;
     margin-bottom: 2rem;
 }
 .page-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.9rem;
-    font-weight: 700;
+    font-family: 'Syne', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
     color: var(--text);
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
     margin: 0;
 }
+.page-title span { color: var(--accent); }
 .page-subtitle {
-    font-size: 0.82rem;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
     color: var(--muted);
     margin-top: 0.3rem;
-    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
 }
 
 .section-label {
-    font-size: 0.7rem;
-    font-weight: 600;
-    letter-spacing: 0.08em;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--muted);
     margin-bottom: 0.5rem;
@@ -117,59 +134,54 @@ header[data-testid="stHeader"], footer { display: none !important; }
 .card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1.25rem 1.5rem;
+    border-radius: 12px;
+    padding: 1.4rem 1.6rem;
     margin-bottom: 1rem;
+}
+.card-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.4rem;
 }
 
 /* Verdict badges */
 .verdict-real {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: var(--real-lt);
-    border: 1.5px solid #6ee7b7;
+    display: inline-block;
+    background: #0d2e1e;
+    border: 2px solid var(--real);
     color: var(--real);
-    font-family: 'Inter', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 600;
-    padding: 0.5rem 1.2rem;
-    border-radius: 6px;
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    padding: 0.5rem 1.4rem;
+    border-radius: 8px;
+    letter-spacing: 0.05em;
 }
 .verdict-fake {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: var(--fake-lt);
-    border: 1.5px solid #fca5a5;
+    display: inline-block;
+    background: #2e0d0d;
+    border: 2px solid var(--fake);
     color: var(--fake);
-    font-family: 'Inter', sans-serif;
-    font-size: 0.95rem;
-    font-weight: 600;
-    padding: 0.5rem 1.2rem;
-    border-radius: 6px;
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    padding: 0.5rem 1.4rem;
+    border-radius: 8px;
+    letter-spacing: 0.05em;
 }
 
-/* Signal tags */
-.tag-real {
+/* Tag pill */
+.tag {
     display: inline-block;
-    background: var(--real-lt);
-    border: 1px solid #6ee7b7;
-    color: var(--real);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
-    padding: 0.18rem 0.55rem;
-    border-radius: 4px;
-    margin: 2px;
-}
-.tag-fake {
-    display: inline-block;
-    background: var(--fake-lt);
-    border: 1px solid #fca5a5;
-    color: var(--fake);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.72rem;
-    padding: 0.18rem 0.55rem;
+    background: #1a1a26;
+    border: 1px solid var(--border);
+    color: var(--accent);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
     border-radius: 4px;
     margin: 2px;
 }
@@ -183,18 +195,18 @@ header[data-testid="stHeader"], footer { display: none !important; }
     text-align: center;
 }
 .stat-value {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Syne', sans-serif;
     font-size: 1.6rem;
     font-weight: 700;
-    color: var(--text);
+    color: var(--accent);
     line-height: 1.1;
 }
 .stat-label {
-    font-size: 0.72rem;
-    font-weight: 500;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem;
     color: var(--muted);
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
     margin-top: 0.25rem;
 }
 
@@ -204,131 +216,90 @@ header[data-testid="stHeader"], footer { display: none !important; }
     margin: 1.5rem 0;
 }
 
-.conf-bar-wrap {
-    background: var(--surface2);
-    border-radius: 4px;
-    height: 6px;
-    width: 100%;
-    margin-top: 0.4rem;
-    overflow: hidden;
-}
-.conf-bar-fill {
-    height: 6px;
-    border-radius: 4px;
-}
-
 /* Streamlit overrides */
 .stTextArea textarea {
     background: var(--surface) !important;
     color: var(--text) !important;
-    border: 1px solid var(--border2) !important;
-    border-radius: 6px !important;
-    font-family: 'Inter', sans-serif !important;
-    font-size: 0.9rem !important;
-    line-height: 1.6 !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    font-family: 'IBM Plex Sans', sans-serif !important;
+    font-size: 0.95rem !important;
 }
 .stTextArea textarea:focus {
     border-color: var(--accent) !important;
-    box-shadow: 0 0 0 3px rgba(26,86,219,0.1) !important;
+    box-shadow: 0 0 0 2px rgba(232,255,69,0.15) !important;
 }
 .stButton > button {
     background: var(--accent) !important;
-    color: #ffffff !important;
+    color: #0a0a0f !important;
     border: none !important;
-    border-radius: 6px !important;
-    font-family: 'Inter', sans-serif !important;
-    font-weight: 600 !important;
-    font-size: 0.875rem !important;
-    padding: 0.5rem 1.4rem !important;
-    letter-spacing: 0.01em !important;
-    transition: background 0.15s !important;
+    border-radius: 8px !important;
+    font-family: 'Syne', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 0.95rem !important;
+    padding: 0.55rem 1.6rem !important;
+    letter-spacing: 0.04em !important;
+    transition: opacity 0.15s !important;
 }
-.stButton > button:hover { background: #1e429f !important; }
+.stButton > button:hover { opacity: 0.85 !important; }
 .stSelectbox div[data-baseweb="select"] > div,
 .stFileUploader section {
     background: var(--surface) !important;
-    border-color: var(--border2) !important;
+    border-color: var(--border) !important;
     color: var(--text) !important;
-    border-radius: 6px !important;
+    border-radius: 8px !important;
 }
 .stProgress > div > div { background: var(--accent) !important; }
 [data-testid="stMetricValue"] {
-    font-family: 'Inter', sans-serif !important;
-    font-size: 1.5rem !important;
+    font-family: 'Syne', sans-serif !important;
+    font-size: 1.8rem !important;
     font-weight: 700 !important;
-    color: var(--text) !important;
+    color: var(--accent) !important;
 }
 [data-testid="stMetricLabel"] {
-    font-family: 'Inter', sans-serif !important;
-    font-size: 0.72rem !important;
+    font-family: 'IBM Plex Mono', monospace !important;
+    font-size: 0.68rem !important;
     color: var(--muted) !important;
     text-transform: uppercase !important;
-    letter-spacing: 0.06em !important;
-    font-weight: 500 !important;
+    letter-spacing: 0.1em !important;
 }
 
 /* Tabs */
 .stTabs [data-baseweb="tab-list"] {
-    background: var(--surface2) !important;
-    border-radius: 6px !important;
+    background: var(--surface) !important;
+    border-radius: 10px !important;
     border: 1px solid var(--border) !important;
-    padding: 3px !important;
+    padding: 4px !important;
     gap: 2px !important;
 }
 .stTabs [data-baseweb="tab"] {
-    font-family: 'Inter', sans-serif !important;
-    font-size: 0.82rem !important;
-    font-weight: 500 !important;
+    font-family: 'IBM Plex Mono', monospace !important;
+    font-size: 0.78rem !important;
     color: var(--muted) !important;
-    border-radius: 4px !important;
+    border-radius: 6px !important;
+    letter-spacing: 0.05em !important;
 }
 .stTabs [aria-selected="true"] {
-    background: var(--surface) !important;
-    color: var(--text) !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
-}
-
-/* Step cards */
-.step-card {
-    display: flex;
-    gap: 1.2rem;
-    align-items: flex-start;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1.1rem 1.4rem;
-    margin-bottom: 0.75rem;
-}
-.step-num {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem;
-    font-weight: 500;
-    color: var(--accent);
-    background: var(--accent-lt);
-    border-radius: 4px;
-    padding: 0.2rem 0.45rem;
-    min-width: fit-content;
-    margin-top: 0.1rem;
-}
-.step-title {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 0.25rem;
-}
-.step-desc {
-    font-size: 0.83rem;
-    color: var(--muted);
-    line-height: 1.65;
+    background: var(--accent) !important;
+    color: #0a0a0f !important;
 }
 
 /* Mobile */
 @media (max-width: 768px) {
     .block-container { padding: 1rem 0.75rem !important; }
-    .page-title { font-size: 1.4rem !important; }
+    .hero-title { font-size: 2rem !important; }
+    .page-title { font-size: 1.5rem !important; }
+    .verdict-real, .verdict-fake { font-size: 1.1rem !important; padding: 0.4rem 1rem !important; }
     .stButton > button { width: 100% !important; }
     .stat-value { font-size: 1.25rem !important; }
-    .stTabs [data-baseweb="tab"] { font-size: 0.75rem !important; }
+    .stTabs [data-baseweb="tab"] { font-size: 0.7rem !important; }
+    [data-testid="stSidebar"] { display: none !important; }
+}
+
+/* Show mobile nav only on small screens */
+.mobile-nav { display: none; }
+@media (max-width: 768px) {
+    .mobile-nav { display: block; margin-bottom: 1rem; }
 }
 </style>
 """, unsafe_allow_html=True)
