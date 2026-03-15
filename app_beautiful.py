@@ -431,7 +431,7 @@ if "🔍  Predict" in page:
 
     st.markdown("""
     <div class='page-header'>
-        <div class='page-title'>Article Verification</div>
+        <div class='page-title'>Fake News Verification</div>
         <div class='page-subtitle'>Paste a news article or headline to assess its credibility</div>
     </div>""", unsafe_allow_html=True)
 
@@ -447,7 +447,7 @@ if "🔍  Predict" in page:
         with col_btn:
             analyze = st.button("Analyse Article")
         with col_hint:
-            st.markdown('<span style="font-size:0.78rem;color:#9ca3af;">Minimum 30 words recommended for accurate results</span>', unsafe_allow_html=True)
+            st.markdown('<span style="font-size:1.00rem;color:#9ca3af;">For accurate results, it is recommended to use at least 30 words.</span>', unsafe_allow_html=True)
 
         if analyze:
             if not model_loaded:
