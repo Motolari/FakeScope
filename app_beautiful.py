@@ -378,45 +378,85 @@ def load_model():
 
 
 # ─────────────────────────────────────────────
-# SIDEBAR
+# LOAD MODEL
+# ─────────────────────────────────────────────
+model, vectorizer, model_loaded = load_model()
+
+# ─────────────────────────────────────────────
+# SIDEBAR (desktop)
 # ─────────────────────────────────────────────
 with st.sidebar:
     st.markdown("""
-    <div style='margin-bottom:1.8rem;padding-bottom:1.2rem;border-bottom:1px solid #e2e5ea;'>
-        <div style='font-family:"Playfair Display",serif;font-size:1.2rem;font-weight:700;color:#111827;'>
-            FakeScope
+    <div style='margin-bottom:1.8rem;'>
+        <div style='font-family:Syne,sans-serif;font-size:1.3rem;font-weight:800;color:#f0f0f5;'>
+            FAKE<span style='color:#e8ff45;'>SCOPE</span>
         </div>
-        <div style='font-size:0.72rem;color:#6b7280;margin-top:0.2rem;font-family:Inter,sans-serif;'>
+        <div style='font-family:"Share Tech Mono",monospace;font-size:0.62rem;color:#6b6b80;letter-spacing:0.12em;text-transform:uppercase;'>
             News Intelligence Platform
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="section-label">Navigation</div>', unsafe_allow_html=True)
-    page = st.radio("", ["Predict", "Train Model", "Evaluate", "How It Works"], label_visibility="collapsed")
+    st.markdown('<div class="card-label">Navigation</div>', unsafe_allow_html=True)
+    page = st.radio(
+        "",
+        ["🔍  Predict", "⚙️  Train Model", "📊  Evaluate", "📖  How It Works"],
+        label_visibility="collapsed"
+    )
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
-
-    model, vectorizer, model_loaded = load_model()
-
-    st.markdown('<div class="section-label">System Status</div>', unsafe_allow_html=True)
+    st.markdown('<div class="card-label">Model Status</div>', unsafe_allow_html=True)
     if model_loaded:
-        st.markdown("""<div style='display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:#047857;font-family:Inter,sans-serif;font-weight:500;'>
-            <span style='width:7px;height:7px;border-radius:50%;background:#047857;display:inline-block;'></span>Model loaded</div>""", unsafe_allow_html=True)
+        st.markdown('<span style="color:#3ddc97;font-family:\'Share Tech Mono\',monospace;font-size:0.78rem;">● MODEL READY</span>', unsafe_allow_html=True)
     else:
-        st.markdown("""<div style='display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:#b91c1c;font-family:Inter,sans-serif;font-weight:500;'>
-            <span style='width:7px;height:7px;border-radius:50%;background:#b91c1c;display:inline-block;'></span>No model found</div>""", unsafe_allow_html=True)
-        st.caption("Train a model first or add `.joblib` files to the app directory.")
+        st.markdown('<span style="color:#ff5f40;font-family:\'Share Tech Mono\',monospace;font-size:0.78rem;">● NO MODEL FOUND</span>', unsafe_allow_html=True)
+        st.caption("Go to ⚙️ Train Model to train one, or place `.joblib` files in the app directory.")
 
     st.markdown('<hr class="divider">', unsafe_allow_html=True)
-    st.markdown("""<div style='font-size:0.75rem;color:#9ca3af;font-family:Inter,sans-serif;line-height:1.7;'>
-        Passive Aggressive Classifier<br>TF-IDF Vectorization<br>Global + Nigerian News Data</div>""", unsafe_allow_html=True)
+    st.markdown('<div class="card-label" style="margin-bottom:0.6rem;">About</div>', unsafe_allow_html=True)
+    st.caption("Built with a Passive Aggressive Classifier + TF-IDF pipeline. Trained on balanced global & Nigerian news data.")
+
+# ─────────────────────────────────────────────
+# MOBILE TOP DROPDOWN NAV
+# ─────────────────────────────────────────────
+st.markdown("""
+<style>
+/* Show mobile nav only on small screens */
+.mobile-nav { display: none; }
+@media (max-width: 768px) {
+    .mobile-nav { display: block; margin-bottom: 1rem; }
+    /* Hide sidebar on mobile */
+    [data-testid="stSidebar"] { display: none !important; }
+}
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown('<div class="mobile-nav">', unsafe_allow_html=True)
+mobile_page = st.selectbox(
+    "Navigate",
+    ["🔍  Predict", "⚙️  Train Model", "📊  Evaluate", "📖  How It Works"],
+    label_visibility="collapsed",
+    key="mobile_nav"
+)
+st.markdown('</div>', unsafe_allow_html=True)
+
+# Use whichever nav is active (mobile overrides sidebar on small screens)
+import streamlit.components.v1 as components
+# Sync: on mobile the selectbox drives page, on desktop the sidebar radio does
+# We detect by checking if sidebar is visible — use session state trick
+if "is_mobile" not in st.session_state:
+    st.session_state.is_mobile = False
+
+# Final page selection — mobile selectbox takes priority if it was changed
+if st.session_state.get("mobile_nav") and st.session_state.mobile_nav != st.session_state.get("last_sidebar_page"):
+    page = mobile_page
+st.session_state.last_sidebar_page = page
 
 
 # ─────────────────────────────────────────────
 # PAGE: PREDICT
 # ─────────────────────────────────────────────
-if page == "Predict":
+if "🔍  Predict" in page:
 
     st.markdown("""
     <div class='page-header'>
@@ -532,7 +572,7 @@ if page == "Predict":
 # ─────────────────────────────────────────────
 # PAGE: TRAIN MODEL
 # ─────────────────────────────────────────────
-elif page == "Train Model":
+elif "⚙️  Train Model" in page:
 
     st.markdown("""
     <div class='page-header'>
@@ -603,7 +643,7 @@ elif page == "Train Model":
 # ─────────────────────────────────────────────
 # PAGE: EVALUATE
 # ─────────────────────────────────────────────
-elif page == "Evaluate":
+elif "📊  Evaluate" in page:
 
     st.markdown("""
     <div class='page-header'>
@@ -709,7 +749,7 @@ elif page == "Evaluate":
 # ─────────────────────────────────────────────
 # PAGE: HOW IT WORKS
 # ─────────────────────────────────────────────
-elif page == "How It Works":
+elif "📖  How It Works" in page:
 
     st.markdown("""
     <div class='page-header'>
