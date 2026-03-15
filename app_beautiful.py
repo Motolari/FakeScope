@@ -435,7 +435,7 @@ if "🔍  Predict" in page:
         <div class='page-subtitle'>Paste a news article or headline to assess its credibility</div>
     </div>""", unsafe_allow_html=True)
 
-    tab1, tab2 = st.tabs(["Single Article", "Bulk Analysis"])
+    tab1, tab2 = st.tabs(["Article", "Bulk Analysis"])
 
     with tab1:
         st.markdown('<div class="section-label">Article Text</div>', unsafe_allow_html=True)
