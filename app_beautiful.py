@@ -216,6 +216,57 @@ header[data-testid="stHeader"], footer { display: none !important; }
     margin: 1.5rem 0;
 }
 
+/* Confidence bar */
+.conf-bar-wrap {
+    background: #1e1e2e;
+    border-radius: 4px;
+    height: 7px;
+    width: 100%;
+    margin-top: 0.6rem;
+    overflow: hidden;
+}
+.conf-bar-fill {
+    height: 7px;
+    border-radius: 4px;
+    transition: width 0.4s ease;
+}
+
+/* Signal tags */
+.tag-real {
+    display: inline-block;
+    background: #0d2e1e;
+    border: 1px solid #3ddc97;
+    color: #3ddc97;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    padding: 0.18rem 0.55rem;
+    border-radius: 4px;
+    margin: 2px;
+}
+.tag-fake {
+    display: inline-block;
+    background: #2e0d0d;
+    border: 1px solid #ff5f40;
+    color: #ff5f40;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    padding: 0.18rem 0.55rem;
+    border-radius: 4px;
+    margin: 2px;
+}
+
+/* History table */
+.history-row-real {
+    border-left: 3px solid #3ddc97;
+    padding-left: 0.6rem;
+    margin-bottom: 0.5rem;
+}
+.history-row-fake {
+    border-left: 3px solid #ff5f40;
+    padding-left: 0.6rem;
+    margin-bottom: 0.5rem;
+}
+
 /* Streamlit overrides */
 .stTextArea textarea {
     background: var(--surface) !important;
@@ -371,7 +422,7 @@ with st.sidebar:
     st.markdown('<div class="card-label">Navigation</div>', unsafe_allow_html=True)
     page = st.radio(
         "",
-        ["🔍  Predict", "⚙️  Train Model", "📊  Evaluate", "📖  How It Works"],
+        ["🔍  Predict", "⚙️  Train Model", "📊  Evaluate", "📖  How It Works", "🕓  History"],
         label_visibility="collapsed"
     )
 
@@ -405,7 +456,7 @@ st.markdown("""
 st.markdown('<div class="mobile-nav">', unsafe_allow_html=True)
 mobile_page = st.selectbox(
     "Navigate",
-    ["🔍  Predict", "⚙️  Train Model", "📊  Evaluate", "📖  How It Works"],
+    ["🔍  Predict", "⚙️  Train Model", "📊  Evaluate", "📖  How It Works", "🕓  History"],
     label_visibility="collapsed",
     key="mobile_nav"
 )
@@ -475,9 +526,23 @@ if "🔍  Predict" in page:
                     score_raw = model.decision_function(vec_input)[0]
                     confidence = min(abs(float(score_raw)) / 3.0, 1.0) * 100
 
+                is_real = str(prediction) in ["0", "real", "Real", "REAL"]
+
+                # ── Save to history ──
+                if "history" not in st.session_state:
+                    st.session_state.history = []
+                import datetime
+                st.session_state.history.insert(0, {
+                    "time":       datetime.datetime.now().strftime("%H:%M:%S"),
+                    "preview":    user_input[:80] + ("…" if len(user_input) > 80 else ""),
+                    "verdict":    "Credible" if is_real else "Misinformation",
+                    "confidence": f"{confidence:.1f}%",
+                    "is_real":    is_real,
+                    "words":      len(user_input.split())
+                })
+
                 st.markdown('<hr class="divider">', unsafe_allow_html=True)
                 st.markdown('<div class="section-label">Result</div>', unsafe_allow_html=True)
-                is_real = str(prediction) in ["0", "real", "Real", "REAL"]
 
                 r1, r2, r3 = st.columns([2, 2, 2])
                 with r1:
@@ -772,3 +837,97 @@ elif "📖  How It Works" in page:
         </div>
     </div>
     """, unsafe_allow_html=True)
+
+
+# ─────────────────────────────────────────────
+# PAGE: HISTORY
+# ─────────────────────────────────────────────
+elif "🕓  History" in page:
+
+    st.markdown("""
+    <div class='page-header'>
+        <div class='page-title'>Verification <span style='color:#e8ff45;'>History</span></div>
+        <div class='page-subtitle'>Log of all articles analysed in this session</div>
+    </div>""", unsafe_allow_html=True)
+
+    history = st.session_state.get("history", [])
+
+    if not history:
+        st.markdown("""
+        <div class="card" style="text-align:center;padding:2.5rem;">
+            <div style="font-size:2rem;margin-bottom:0.8rem;">📭</div>
+            <div style="font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;color:#f0f0f5;margin-bottom:0.4rem;">No history yet</div>
+            <div style="font-size:0.85rem;color:#6b6b80;">Articles you analyse in the Predict tab will appear here.</div>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        # ── Summary stats ──
+        total    = len(history)
+        credible = sum(1 for h in history if h["is_real"])
+        misinfo  = total - credible
+
+        s1, s2, s3 = st.columns(3)
+        s1.markdown(f'<div class="stat-box"><div class="stat-value">{total}</div><div class="stat-label">Total Checked</div></div>', unsafe_allow_html=True)
+        s2.markdown(f'<div class="stat-box"><div class="stat-value" style="color:#3ddc97;">{credible}</div><div class="stat-label">Credible</div></div>', unsafe_allow_html=True)
+        s3.markdown(f'<div class="stat-box"><div class="stat-value" style="color:#ff5f40;">{misinfo}</div><div class="stat-label">Misinformation</div></div>', unsafe_allow_html=True)
+
+        st.markdown('<hr class="divider">', unsafe_allow_html=True)
+
+        # ── Trend bar chart ──
+        if total >= 2:
+            st.markdown('<div class="section-label">Trend — Confidence per Check</div>', unsafe_allow_html=True)
+            import matplotlib.pyplot as plt
+            import matplotlib.patches as mpatches
+            fig, ax = plt.subplots(figsize=(8, 2.2))
+            fig.patch.set_facecolor('#12121a')
+            ax.set_facecolor('#12121a')
+            conf_vals  = [float(h["confidence"].replace('%','')) for h in reversed(history)]
+            colors_seq = ['#3ddc97' if h["is_real"] else '#ff5f40' for h in reversed(history)]
+            ax.bar(range(len(conf_vals)), conf_vals, color=colors_seq, edgecolor='none', width=0.6)
+            ax.set_ylim(0, 105)
+            ax.set_ylabel('Confidence %', color='#6b6b80', fontsize=8)
+            ax.tick_params(colors='#6b6b80', labelsize=7)
+            ax.set_xticks(range(len(conf_vals)))
+            ax.set_xticklabels([f"#{i+1}" for i in range(len(conf_vals))], color='#6b6b80', fontsize=7)
+            for spine in ax.spines.values(): spine.set_edgecolor('#1e1e2e')
+            ax.legend(handles=[mpatches.Patch(color='#3ddc97', label='Credible'),
+                                mpatches.Patch(color='#ff5f40', label='Misinformation')],
+                      facecolor='#12121a', labelcolor='#a0a0b0', fontsize=8, framealpha=0.5)
+            plt.tight_layout()
+            st.pyplot(fig)
+            st.markdown('<hr class="divider">', unsafe_allow_html=True)
+
+        # ── History log ──
+        st.markdown('<div class="section-label">All Checks — Most Recent First</div>', unsafe_allow_html=True)
+        for i, h in enumerate(history):
+            border_color  = '#3ddc97' if h["is_real"] else '#ff5f40'
+            verdict_color = '#3ddc97' if h["is_real"] else '#ff5f40'
+            verdict_icon  = '✓' if h["is_real"] else '✗'
+            st.markdown(f"""
+            <div class="card" style="border-left:3px solid {border_color};padding:1rem 1.2rem;margin-bottom:0.6rem;">
+                <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:0.5rem;">
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:0.65rem;color:#6b6b80;">#{total - i} &nbsp;·&nbsp; {h['time']} &nbsp;·&nbsp; {h['words']} words</div>
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.85rem;color:{verdict_color};">{verdict_icon} {h['verdict']} &nbsp;·&nbsp; {h['confidence']}</div>
+                </div>
+                <div style="font-size:0.88rem;color:#c0c0d0;margin-top:0.45rem;line-height:1.5;">{h['preview']}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+        st.markdown('<hr class="divider">', unsafe_allow_html=True)
+
+        # ── Export + Clear buttons ──
+        col_export, col_clear = st.columns([1, 1])
+        with col_export:
+            hist_df = pd.DataFrame(history)[["time", "verdict", "confidence", "words", "preview"]]
+            hist_df.columns = ["Time", "Verdict", "Confidence", "Words", "Article Preview"]
+            st.download_button(
+                "⬇ Export History as CSV",
+                hist_df.to_csv(index=False).encode("utf-8"),
+                "verification_history.csv",
+                "text/csv"
+            )
+        with col_clear:
+            if st.button("🗑 Clear History"):
+                st.session_state.history = []
+                st.rerun()
+
