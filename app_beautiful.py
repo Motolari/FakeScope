@@ -423,6 +423,19 @@ if st.session_state.get("mobile_nav") and st.session_state.mobile_nav != st.sess
     page = mobile_page
 st.session_state.last_sidebar_page = page
 
+# ─────────────────────────────────────────────
+# GLOBAL TITLE (shows on every page)
+# ─────────────────────────────────────────────
+st.markdown("""
+<div style='margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:1px solid #1e1e2e;'>
+    <div style='font-family:Syne,sans-serif;font-weight:800;font-size:3.2rem;letter-spacing:-0.03em;line-height:1;color:#f0f0f5;'>
+        FAKE<span style='color:#e8ff45;'>SCOPE</span>
+    </div>
+    <div style='font-family:"IBM Plex Mono",monospace;font-size:0.72rem;color:#6b6b80;letter-spacing:0.15em;text-transform:uppercase;margin-top:0.4rem;'>
+        News Intelligence Platform
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 # ─────────────────────────────────────────────
 # PAGE: PREDICT
