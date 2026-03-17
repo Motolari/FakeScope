@@ -12,7 +12,6 @@ import matplotlib.patches as mpatches
 import os
 import warnings
 warnings.filterwarnings('ignore')
-
 # ─────────────────────────────────────────────
 # PAGE CONFIG
 # ─────────────────────────────────────────────
@@ -239,30 +238,27 @@ if "🔍  Predict" in page:
         <div class='page-subtitle'>Paste a news article or headline to assess its credibility</div>
     </div>""", unsafe_allow_html=True)
 
-    tab1, tab2 = st.tabs(["Single Article", "Bulk Analysis"])
+    st.markdown('<div class="section-label">Article Text</div>', unsafe_allow_html=True)
+    user_input = st.text_area("", height=180,
+        placeholder="Paste a news article, headline, or paragraph here…",
+        label_visibility="collapsed")
 
-    with tab1:
-        st.markdown('<div class="section-label">Article Text</div>', unsafe_allow_html=True)
-        user_input = st.text_area("", height=180,
-            placeholder="Paste a news article, headline, or paragraph here…",
-            label_visibility="collapsed")
+    col_btn, col_hint = st.columns([1, 5])
+    with col_btn:
+        analyze = st.button("Analyse Article")
+    with col_hint:
+        st.markdown('<span style="font-size:0.78rem;color:#9ca3af;">Minimum 30 words recommended for accurate results</span>', unsafe_allow_html=True)
 
-        col_btn, col_hint = st.columns([1, 5])
-        with col_btn:
-            analyze = st.button("Analyse Article")
-        with col_hint:
-            st.markdown('<span style="font-size:0.78rem;color:#9ca3af;">Minimum 30 words recommended for accurate results</span>', unsafe_allow_html=True)
-
-        if analyze:
-            if not model_loaded:
-                st.error("No model found. Please place the .joblib files in the app directory.")
-            elif not user_input.strip():
-                st.warning("Please enter some article text before analysing.")
-            else:
-                with st.spinner("Analysing article…"):
-                    cleaned = clean_text(user_input)
-                    vec_input = vectorizer.transform([cleaned])
-                    prediction = model.predict(vec_input)[0]
+    if analyze:
+        if not model_loaded:
+            st.error("No model found. Please place the .joblib files in the app directory.")
+        elif not user_input.strip():
+            st.warning("Please enter some article text before analysing.")
+        else:
+            with st.spinner("Analysing article…"):
+                cleaned = clean_text(user_input)
+                vec_input = vectorizer.transform([cleaned])
+                prediction = model.predict(vec_input)[0]
                     score_raw = model.decision_function(vec_input)[0]
                     confidence = min(abs(float(score_raw)) / 3.0, 1.0) * 100
 
@@ -322,39 +318,6 @@ if "🔍  Predict" in page:
                         for w, s in present_sorted
                     )
                     st.markdown(tags_html, unsafe_allow_html=True)
-
-    with tab2:
-        st.markdown('<div class="section-label">Upload CSV File</div>', unsafe_allow_html=True)
-        st.caption("CSV must contain a `text` column. Upload your dataset for batch prediction.")
-        uploaded = st.file_uploader("", type=["csv"], label_visibility="collapsed")
-
-        if uploaded:
-            if not model_loaded:
-                st.error("No model found. Please place the .joblib files in the app directory.")
-            else:
-                df_up = pd.read_csv(uploaded)
-                if 'text' not in df_up.columns:
-                    st.error("CSV must contain a column named `text`.")
-                else:
-                    with st.spinner(f"Analysing {len(df_up)} articles…"):
-                        df_up['cleaned_text'] = df_up['text'].apply(clean_text)
-                        vecs = vectorizer.transform(df_up['cleaned_text'])
-                        df_up['prediction'] = model.predict(vecs)
-                        scores = model.decision_function(vecs)
-                        df_up['confidence'] = [f"{min(abs(float(s))/3.0,1.0)*100:.1f}%" for s in scores]
-
-                    fake_count = (df_up['prediction'].astype(str).str.lower().isin(['1','fake'])).sum()
-                    real_count = len(df_up) - fake_count
-
-                    st.markdown('<hr class="divider">', unsafe_allow_html=True)
-                    c1, c2, c3 = st.columns(3)
-                    c1.markdown(f'<div class="stat-box"><div class="stat-value">{len(df_up)}</div><div class="stat-label">Total Articles</div></div>', unsafe_allow_html=True)
-                    c2.markdown(f'<div class="stat-box"><div class="stat-value" style="color:#3ddc97;">{real_count}</div><div class="stat-label">Credible</div></div>', unsafe_allow_html=True)
-                    c3.markdown(f'<div class="stat-box"><div class="stat-value" style="color:#ff5f40;">{fake_count}</div><div class="stat-label">Misinformation</div></div>', unsafe_allow_html=True)
-
-                    st.markdown('<hr class="divider">', unsafe_allow_html=True)
-                    st.dataframe(df_up[['text','prediction','confidence']].head(50), use_container_width=True, height=300)
-                    st.download_button("Download Results as CSV", df_up.to_csv(index=False).encode('utf-8'), "predictions.csv", "text/csv")
 
 
 # ─────────────────────────────────────────────
@@ -471,17 +434,11 @@ elif "🕓  History" in page:
 
         st.markdown('<hr class="divider">', unsafe_allow_html=True)
 
-        col_export, col_clear = st.columns([1, 1])
-        with col_export:
-            hist_df = pd.DataFrame(history)[["time", "verdict", "confidence", "words", "preview"]]
-            hist_df.columns = ["Time", "Verdict", "Confidence", "Words", "Article Preview"]
-            st.download_button(
-                "⬇ Export History as CSV",
-                hist_df.to_csv(index=False).encode("utf-8"),
-                "verification_history.csv",
-                "text/csv"
-            )
-        with col_clear:
-            if st.button("🗑 Clear History"):
-                st.session_state.history = []
-                st.rerun()
+        hist_df = pd.DataFrame(history)[["time", "verdict", "confidence", "words", "preview"]]
+        hist_df.columns = ["Time", "Verdict", "Confidence", "Words", "Article Preview"]
+        st.download_button(
+            "⬇ Export History as CSV",
+            hist_df.to_csv(index=False).encode("utf-8"),
+            "verification_history.csv",
+            "text/csv"
+        )
