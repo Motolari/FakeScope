@@ -259,8 +259,8 @@ if "🔍  Predict" in page:
                 cleaned = clean_text(user_input)
                 vec_input = vectorizer.transform([cleaned])
                 prediction = model.predict(vec_input)[0]
-                    score_raw = model.decision_function(vec_input)[0]
-                    confidence = min(abs(float(score_raw)) / 3.0, 1.0) * 100
+                score_raw = model.decision_function(vec_input)[0]
+                confidence = min(abs(float(score_raw)) / 3.0, 1.0) * 100
 
                 is_real = str(prediction) in ["0", "real", "Real", "REAL"]
 
