@@ -1,1 +1,12 @@
+name: Keep Streamlit App Awake
+on:
+  schedule:
+    - cron: '0 0 * * *'  # runs daily
+  workflow_dispatch:
 
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping app
+        run: curl -f https://fakescope.streamlit.app/
