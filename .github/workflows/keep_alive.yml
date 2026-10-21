@@ -17,7 +17,7 @@ jobs:
       - run: |
           python - <<'EOF'
           from playwright.sync_api import sync_playwright
-          URL = "https://your-app-name.streamlit.app"
+          URL = "https://fakescope.streamlit.app"
           with sync_playwright() as p:
               b = p.chromium.launch()
               page = b.new_page()
